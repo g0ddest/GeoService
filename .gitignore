@@ -1,4 +1,8 @@
 # Created by .ignore support plugin (hsz.mobi)
+
+# config with keys
+src/name/velikodniy/vitaliy/geo/Conf.java
+
 ### Gradle template
 .gradle
 gradle/
@@ -69,4 +73,3 @@ atlassian-ide-plugin.xml
 com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
-

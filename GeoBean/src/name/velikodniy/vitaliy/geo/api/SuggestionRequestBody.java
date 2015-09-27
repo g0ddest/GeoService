@@ -1,4 +1,4 @@
-package name.velikodniy.vitaliy.geo.dto;
+package name.velikodniy.vitaliy.geo.api;
 
 public class SuggestionRequestBody{
 
