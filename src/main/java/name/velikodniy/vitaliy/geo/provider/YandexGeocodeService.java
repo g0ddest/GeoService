@@ -10,6 +10,7 @@ import name.velikodniy.vitaliy.geo.cache.CachingProvider;
 import name.velikodniy.vitaliy.geo.dto.GeoObject;
 import name.velikodniy.vitaliy.geo.dto.GeoRoute;
 import name.velikodniy.vitaliy.geo.dto.Point;
+import name.velikodniy.vitaliy.geo.realm.dadata.RealmDaDataSuggestion;
 import name.velikodniy.vitaliy.geo.realm.yandex.geocode.RealmYandexFeatureMember;
 import name.velikodniy.vitaliy.geo.realm.yandex.geocode.RealmYandexGeocode;
 import retrofit.RestAdapter;
@@ -55,17 +56,46 @@ public class YandexGeocodeService implements GeoProvider {
 
     @Override
     public List<GeoObject> getObjects(String name) {
-        return null;
+
+        String cacheKey = String.format("%s%s", Conf.GEOCODE_CACHE_PREFIX, name);
+
+        if(_cache != null && _cache.exists(cacheKey)) {
+            return _gson.fromJson(_cache.get(cacheKey), ArrayList.class);
+        }else{
+            List<GeoObject> response = _geocodeApi.geocode(new HashMap<String, String>() {{
+                put("geocode", name);
+                put("format", "json");
+            }}).getGeoObjects();
+
+            if(_cache != null)
+                _cache.cache(cacheKey,
+                        _gson.toJson(response),
+                        Conf.GEOCODE_CACHE_SEC);
+
+            return response;
+        }
     }
 
     @Override
     public List<GeoObject> getObjects(float lat, float lng) {
-        RealmYandexGeocode response = _geocodeApi.geocode(new HashMap<String, String>() {{
-            put("geocode", String.format(Locale.ENGLISH, "%f,%f", lng, lat));
-            put("format", "json");
-        }});
 
-        return response.getGeoObjects();
+        String cacheKey = String.format(Locale.ENGLISH, "%s%f,%f", Conf.GEOCODE_CACHE_PREFIX, lng, lat);
+
+        if(_cache != null && _cache.exists(cacheKey)) {
+            return _gson.fromJson(_cache.get(cacheKey), ArrayList.class);
+        }else{
+            List<GeoObject> response = _geocodeApi.geocode(new HashMap<String, String>() {{
+                put("geocode", String.format(Locale.ENGLISH, "%f,%f", lng, lat));
+                put("format", "json");
+            }}).getGeoObjects();
+
+            if(_cache != null)
+                _cache.cache(cacheKey,
+                        _gson.toJson(response),
+                        Conf.GEOCODE_CACHE_SEC);
+
+            return response;
+        }
     }
 
     @Override
