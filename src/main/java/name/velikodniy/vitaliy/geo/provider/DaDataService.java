@@ -4,7 +4,7 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import name.velikodniy.vitaliy.geo.Conf;
+import name.velikodniy.vitaliy.Conf;
 import name.velikodniy.vitaliy.geo.api.DaDataApi;
 import name.velikodniy.vitaliy.geo.api.SuggestionRequestBody;
 import name.velikodniy.vitaliy.geo.cache.CachingProvider;
@@ -61,7 +61,7 @@ public class DaDataService implements SuggestionProvider {
         if(_cache != null && _cache.exists(cacheKey)){
             return _gson_builder.fromJson(_cache.get(cacheKey), RealmDaDataSuggestion.class);
         }else {
-            RealmDaDataSuggestion response = apiService.getSuggestionSync(body);
+            RealmDaDataSuggestion response = apiService.getSuggestion(body);
             if(_cache != null)
                 _cache.cache(cacheKey,
                         _gson_encoder.toJson(response),

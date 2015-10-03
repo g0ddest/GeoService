@@ -1,8 +1,5 @@
 package name.velikodniy.vitaliy.geo.realm.dadata;
 
-/**
- * @author Savelii Zagurskii
- */
 public class RealmData{
 
     private String uuid;

@@ -1,9 +1,7 @@
 package name.velikodniy.vitaliy.geo.cache;
 
-import name.velikodniy.vitaliy.geo.Conf;
+import name.velikodniy.vitaliy.Conf;
 import redis.clients.jedis.Jedis;
-
-import java.io.IOException;
 
 public class Redis implements CachingProvider {
 

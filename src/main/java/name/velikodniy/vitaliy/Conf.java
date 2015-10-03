@@ -1,4 +1,4 @@
-package name.velikodniy.vitaliy.geo;
+package name.velikodniy.vitaliy;
 
 // Todo replace conf to etc
 public class Conf {
@@ -9,5 +9,6 @@ public class Conf {
     public static String REDIS_HOST = "192.168.88.243";
     public static String SUGGESTIONS_CACHE_PREFIX = "SG@";
     public static int SUGGESTIONS_CACHE_SEC = 86400; // 1 day
+    public static String YANDEX_GEOCODE_BASE_URL = "https://geocode-maps.yandex.ru/";
 
 }
