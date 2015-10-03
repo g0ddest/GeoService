@@ -1,5 +1,6 @@
 package name.velikodniy.vitaliy.geo.realm.dadata;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class RealmDaDataSuggestion {
