@@ -7,6 +7,7 @@ import name.velikodniy.vitaliy.geo.provider.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 
 @Path("/")
@@ -40,11 +41,17 @@ public class Server {
     @Consumes(MediaType.APPLICATION_JSON)
     public String suggestions(
             @QueryParam("q") String q,
-            @DefaultValue("10") @QueryParam("c") int count
+            @DefaultValue("10") @QueryParam("c") int count,
+            @QueryParam("lat") float lat,
+            @QueryParam("lng") float lng,
+            @DefaultValue("city") @QueryParam("locations") String locations,
+            @QueryParam("locations_value") String locationsValue
+
     ){
         try {
+            SuggestionRequestBody request = new SuggestionRequestBody(q, count);
             return gson.toJson(
-                    _suggestion.getSuggestions(new SuggestionRequestBody(q, count))
+                    _suggestion.getSuggestions(request, _geoYandex, lat, lng, locations, locationsValue)
             );
         }catch(IOException ex){
             //TODO: return 403

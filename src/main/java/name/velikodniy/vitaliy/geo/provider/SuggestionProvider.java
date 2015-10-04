@@ -7,6 +7,6 @@ import java.io.IOException;
 
 public interface SuggestionProvider {
 
-    RealmDaDataSuggestion getSuggestions(SuggestionRequestBody query) throws IOException;
+    RealmDaDataSuggestion getSuggestions(SuggestionRequestBody query, GeoProvider geoProvider, float lat, float lng, String locations, String locationsValue) throws IOException;
 
 }

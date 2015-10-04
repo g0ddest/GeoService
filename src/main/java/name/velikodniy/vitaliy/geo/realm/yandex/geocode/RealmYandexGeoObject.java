@@ -5,6 +5,7 @@ public class RealmYandexGeoObject {
     private RealmYandexBoundedBy boundedBy;
     private String description;
     private String name;
+    private RealmYandexMetaDataProperty metaDataProperty;
 
     public RealmYandexPoint getPoint() {
         return Point;
@@ -36,5 +37,13 @@ public class RealmYandexGeoObject {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public RealmYandexMetaDataProperty getMetaDataProperty() {
+        return metaDataProperty;
+    }
+
+    public void setMetaDataProperty(RealmYandexMetaDataProperty metaDataProperty) {
+        this.metaDataProperty = metaDataProperty;
     }
 }

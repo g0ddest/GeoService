@@ -1,9 +1,13 @@
 package name.velikodniy.vitaliy.geo.api;
 
+import java.util.HashMap;
+import java.util.List;
+
 public class SuggestionRequestBody{
 
     private String query;
     private int count;
+    private List<HashMap<String, String>> locations;
 
     public SuggestionRequestBody(String query, int count) {
         this.query = query;
@@ -26,4 +30,11 @@ public class SuggestionRequestBody{
         this.count = count;
     }
 
+    public List<HashMap<String, String>> getLocations() {
+        return locations;
+    }
+
+    public void setLocations(List<HashMap<String, String>> locations) {
+        this.locations = locations;
+    }
 }

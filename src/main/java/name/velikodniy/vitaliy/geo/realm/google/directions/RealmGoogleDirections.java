@@ -38,26 +38,28 @@ public class RealmGoogleDirections {
 
     public List<GeoRoute> getGeoRoutes(){
 
-        ArrayList<GeoRoute> routes = new ArrayList<>();
+        ArrayList<GeoRoute> rts = new ArrayList<>();
 
         for(RealmGoogleRoute realmGoogleRoute : getRoutes())
-            for (RealmGoogleLeg leg : realmGoogleRoute.getLegs())
-                routes.add(new GeoRoute() {{
-                    setDistance(leg.getDistance().getValue());
-                    setDuration(leg.getDuration().getValue());
-                    setOrigin(new GeoObject(
-                            new Point(leg.getStart_location().getLat(), leg.getStart_location().getLng()),
-                            leg.getStart_address(),
-                            leg.getStart_address()
-                    ));
-                    setDestination(new GeoObject(
-                            new Point(leg.getEnd_location().getLat(), leg.getEnd_location().getLng()),
-                            leg.getEnd_address(),
-                            leg.getEnd_address()
-                    ));
-                }});
+            for (RealmGoogleLeg leg : realmGoogleRoute.getLegs()) {
+                GeoRoute geoRoute = new GeoRoute(
+                        new GeoObject(
+                                new Point(leg.getStart_location().getLat(), leg.getStart_location().getLng()),
+                                leg.getStart_address(),
+                                leg.getStart_address()
+                        ),
+                        new GeoObject(
+                                new Point(leg.getEnd_location().getLat(), leg.getEnd_location().getLng()),
+                                leg.getEnd_address(),
+                                leg.getEnd_address()
+                        ),
+                        leg.getDistance().getValue(),
+                        leg.getDuration().getValue()
+                );
+                rts.add(geoRoute);
+            }
 
-        return routes;
+        return rts;
 
     }
 }

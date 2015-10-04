@@ -82,4 +82,9 @@ public class GoogleMapsService implements GeoProvider {
             return response;
         }
     }
+
+    @Override
+    public String getLocationMeta(float lat, float lng, String locationType) {
+        return null;
+    }
 }

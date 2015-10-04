@@ -11,8 +11,7 @@ import name.velikodniy.vitaliy.geo.dto.GeoObject;
 import name.velikodniy.vitaliy.geo.dto.GeoRoute;
 import name.velikodniy.vitaliy.geo.dto.Point;
 import name.velikodniy.vitaliy.geo.realm.dadata.RealmDaDataSuggestion;
-import name.velikodniy.vitaliy.geo.realm.yandex.geocode.RealmYandexFeatureMember;
-import name.velikodniy.vitaliy.geo.realm.yandex.geocode.RealmYandexGeocode;
+import name.velikodniy.vitaliy.geo.realm.yandex.geocode.*;
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
 
@@ -103,4 +102,26 @@ public class YandexGeocodeService implements GeoProvider {
         return null;
     }
 
+    @Override
+    public String getLocationMeta(float lat, float lng, String locationType) {
+
+        RealmYandexGeocode response = _geocodeApi.geocode(new HashMap<String, String>() {{
+            put("geocode", String.format(Locale.ENGLISH, "%f,%f", lng, lat));
+            put("format", "json");
+        }});
+
+        if(response != null){
+            for(RealmYandexFeatureMember r : response.getResponse().getGeoObjectCollection().getFeatureMember()){
+                try {
+                    String meta = r.getGeoObject().getMetaDataProperty().getGeocoderMetaData().getKind();
+                    if(Conf.YANDEX_DADATA_KINDS.containsKey(meta) &&
+                       Conf.YANDEX_DADATA_KINDS.get(meta).equals(locationType))
+                        return r.getGeoObject().getName();
+                }catch (NullPointerException ex){}
+            }
+        }
+
+        return null;
+
+    }
 }

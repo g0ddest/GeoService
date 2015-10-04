@@ -14,6 +14,8 @@ import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DaDataService implements SuggestionProvider {
 
@@ -56,11 +58,28 @@ public class DaDataService implements SuggestionProvider {
 
 
     @Override
-    public RealmDaDataSuggestion getSuggestions(SuggestionRequestBody body) throws IOException {
-        String cacheKey = String.format("%s%d%s", Conf.SUGGESTIONS_CACHE_PREFIX, body.getCount(), body.getQuery());
+    public RealmDaDataSuggestion getSuggestions(SuggestionRequestBody body, GeoProvider geoProvider, float lat, float lng, String locationsType, String locationsValue) throws IOException {
+        String cacheKey = String.format("%s%d%s,%f,%f,%s,%s", Conf.SUGGESTIONS_CACHE_PREFIX, body.getCount(), body.getQuery(), lat, lng, locationsType, locationsValue);
         if(_cache != null && _cache.exists(cacheKey)){
             return _gson_builder.fromJson(_cache.get(cacheKey), RealmDaDataSuggestion.class);
         }else {
+
+            if(locationsValue != null && !locationsValue.isEmpty())
+                body.setLocations(new ArrayList<HashMap<String, String>>(){{
+                    add(new HashMap<String, String>(){{
+                        put(locationsType, locationsValue);
+                    }});
+                }});
+            else if(lat != 0.0 && lng != 0.0){
+                String locationsVal = geoProvider.getLocationMeta(lat, lng, locationsType);
+                if(locationsVal != null && !locationsVal.isEmpty())
+                    body.setLocations(new ArrayList<HashMap<String, String>>(){{
+                        add(new HashMap<String, String>(){{
+                            put(locationsType, locationsVal);
+                        }});
+                    }});
+            }
+
             RealmDaDataSuggestion response = apiService.getSuggestion(body);
             if(_cache != null)
                 _cache.cache(cacheKey,

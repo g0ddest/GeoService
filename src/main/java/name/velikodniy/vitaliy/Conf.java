@@ -1,5 +1,7 @@
 package name.velikodniy.vitaliy;
 
+import java.util.HashMap;
+
 // Todo replace conf to etc
 public class Conf {
 
@@ -16,5 +18,11 @@ public class Conf {
     public static String GOOGLE_DIRECTIONS_BASE_URL = "https://maps.googleapis.com/";
     public static int ROUTE_CACHE_SEC = 30; // 30 sec
     public static String GOOGLE_LANG = "ru";
+    public static HashMap<String, String> YANDEX_DADATA_KINDS = new HashMap<String, String>(){{
+        put("street", "street");
+        put("locality", "city");
+        put("area", "area");
+        put("province", "region");
+    }};
 
 }

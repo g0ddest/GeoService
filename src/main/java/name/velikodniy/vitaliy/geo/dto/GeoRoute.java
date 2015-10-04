@@ -8,6 +8,13 @@ public class GeoRoute {
     Integer distance;
     Integer duration;
 
+    public GeoRoute(GeoObject origin, GeoObject destination, Integer distance, Integer duration) {
+        this.origin = origin;
+        this.destination = destination;
+        this.distance = distance;
+        this.duration = duration;
+    }
+
     public GeoObject getOrigin() {
         return origin;
     }
