@@ -1,0 +1,85 @@
+package name.velikodniy.vitaliy.geo.provider;
+
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import name.velikodniy.vitaliy.Conf;
+import name.velikodniy.vitaliy.geo.api.GoogleMapsApi;
+import name.velikodniy.vitaliy.geo.cache.CachingProvider;
+import name.velikodniy.vitaliy.geo.dto.GeoObject;
+import name.velikodniy.vitaliy.geo.dto.GeoRoute;
+import retrofit.RestAdapter;
+import retrofit.converter.GsonConverter;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+
+public class GoogleMapsService implements GeoProvider {
+
+    private CachingProvider _cache;
+    private Gson _gson;
+    private GoogleMapsApi _geocodeApi;
+
+    public GoogleMapsService(CachingProvider cache) {
+
+        _cache = cache;
+        _gson = new GsonBuilder()
+                .setExclusionStrategies(new ExclusionStrategy() {
+                    @Override
+                    public boolean shouldSkipField(FieldAttributes f) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean shouldSkipClass(Class<?> clazz) {
+                        return false;
+                    }
+                }).create();
+
+
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setLogLevel(Conf.DEBUG ? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE)
+                .setEndpoint(Conf.GOOGLE_DIRECTIONS_BASE_URL)
+                .setConverter(new GsonConverter(_gson))
+                .build();
+
+        _geocodeApi = restAdapter.create(GoogleMapsApi.class);
+
+    }
+
+    @Override
+    public List<GeoObject> getObjects(String name) {
+        return null;
+    }
+
+    @Override
+    public List<GeoObject> getObjects(float lat, float lng) {
+        return null;
+    }
+
+    @Override
+    public List<GeoRoute> getRoute(float latOrigin, float lngOrigin, float latDest, float lngDest) {
+        String cacheKey = String.format(Locale.ENGLISH, "%s%f,%f,%f,%f", Conf.GEOCODE_CACHE_PREFIX, latOrigin, lngOrigin, latDest, lngDest);
+
+        if(_cache != null && _cache.exists(cacheKey)) {
+            return _gson.fromJson(_cache.get(cacheKey), ArrayList.class);
+        }else{
+            List<GeoRoute> response = _geocodeApi.getRoute(new HashMap<String, String>() {{
+                put("origin", String.format(Locale.ENGLISH, "%f,%f", latOrigin, lngOrigin));
+                put("destination", String.format(Locale.ENGLISH, "%f,%f", latDest, lngDest));
+                put("key", Conf.GOOGLE_API_KEY);
+                put("language", Conf.GOOGLE_LANG);
+            }}).getGeoRoutes();
+
+            if(_cache != null)
+                _cache.cache(cacheKey,
+                        _gson.toJson(response),
+                        Conf.ROUTE_CACHE_SEC);
+
+            return response;
+        }
+    }
+}

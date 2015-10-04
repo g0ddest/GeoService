@@ -5,7 +5,6 @@ import retrofit.http.Body;
 import retrofit.http.POST;
 
 public interface DaDataApi {
-
     @POST("/api/v2/suggest/address")
     RealmDaDataSuggestion getSuggestion(@Body SuggestionRequestBody body);
 }

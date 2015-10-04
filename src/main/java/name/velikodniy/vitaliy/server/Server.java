@@ -3,11 +3,7 @@ import com.google.gson.Gson;
 import name.velikodniy.vitaliy.geo.api.SuggestionRequestBody;
 import name.velikodniy.vitaliy.geo.cache.CachingProvider;
 import name.velikodniy.vitaliy.geo.cache.Redis;
-import name.velikodniy.vitaliy.geo.provider.DaDataService;
-import name.velikodniy.vitaliy.geo.provider.GeoProvider;
-import name.velikodniy.vitaliy.geo.provider.SuggestionProvider;
-import name.velikodniy.vitaliy.geo.provider.YandexGeocodeService;
-import name.velikodniy.vitaliy.geo.realm.dadata.RealmDaDataSuggestion;
+import name.velikodniy.vitaliy.geo.provider.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -18,12 +14,19 @@ public class Server {
 
     private Gson gson = new Gson();
     private SuggestionProvider _suggestion;
-    private GeoProvider _geo;
+    private GeoProvider _geoYandex;
+    private GeoProvider _geoGoogle;
 
     public Server() {
-        CachingProvider _cache = new Redis();
+        CachingProvider _cache = null;
+        try{
+            _cache = new Redis();
+        }catch (Exception e){
+            System.out.println("Cant connect to redis");
+        }
         _suggestion = new DaDataService(_cache);
-        _geo = new YandexGeocodeService(_cache);
+        _geoYandex = new YandexGeocodeService(_cache);
+        _geoGoogle = new GoogleMapsService(_cache);
     }
 
     @GET
@@ -37,7 +40,7 @@ public class Server {
     @Consumes(MediaType.APPLICATION_JSON)
     public String suggestions(
             @QueryParam("q") String q,
-            @DefaultValue("10") @QueryParam("count") int count
+            @DefaultValue("10") @QueryParam("c") int count
     ){
         try {
             return gson.toJson(
@@ -57,7 +60,7 @@ public class Server {
             @QueryParam("lat") float lat,
             @QueryParam("lng") float lng
     ){
-        return gson.toJson(_geo.getObjects(lat, lng));
+        return gson.toJson(_geoYandex.getObjects(lat, lng));
     }
 
     @GET
@@ -67,7 +70,20 @@ public class Server {
     public String reverseGeo(
             @QueryParam("name") String name
     ){
-        return gson.toJson(_geo.getObjects(name));
+        return gson.toJson(_geoYandex.getObjects(name));
+    }
+
+    @GET
+    @Path("/route")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String route(
+            @QueryParam("lat_start") float latStart,
+            @QueryParam("lng_start") float lngStart,
+            @QueryParam("lat_end") float latEnd,
+            @QueryParam("lng_end") float lngEnd
+    ){
+        return gson.toJson(_geoGoogle.getRoute(latStart, lngStart, latEnd, lngEnd));
     }
 
 }

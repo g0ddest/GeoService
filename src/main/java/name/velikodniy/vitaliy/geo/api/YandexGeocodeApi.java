@@ -7,8 +7,6 @@ import retrofit.http.QueryMap;
 import java.util.Map;
 
 public interface YandexGeocodeApi {
-
     @GET("/1.x/")
     RealmYandexGeocode geocode(@QueryMap Map<String, String> options);
-
 }
