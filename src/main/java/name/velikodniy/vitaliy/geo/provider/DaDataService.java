@@ -106,7 +106,7 @@ public class DaDataService implements SuggestionProvider, GeoProvider {
             s.setDistrict(answer.getRealmData().getCity_district());
             s.setAddress_full(answer.getValue());
             s.setCountry(answer.getRealmData().getCountry());
-            s.setRegion(answer.getRealmData().getCountry());
+            s.setRegion(answer.getRealmData().getRegion_with_type());
             s.setHouse(answer.getRealmData().getHouse());
             s.setStreet(answer.getRealmData().getStreet_with_type());
             s.setLat(answer.getRealmData().getGeo_lat());
