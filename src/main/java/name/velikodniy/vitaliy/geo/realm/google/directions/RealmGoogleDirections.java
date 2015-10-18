@@ -53,8 +53,8 @@ public class RealmGoogleDirections {
                                 leg.getEnd_address(),
                                 leg.getEnd_address()
                         ),
-                        leg.getDistance().getValue(),
-                        leg.getDuration().getValue()
+                        (float) leg.getDistance().getValue(),
+                        (float) leg.getDuration().getValue()
                 );
                 rts.add(geoRoute);
             }

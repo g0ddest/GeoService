@@ -8,7 +8,6 @@ import name.velikodniy.vitaliy.geo.provider.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 
 @Path("/")
@@ -27,7 +26,7 @@ public class Server {
             System.out.println("Cant connect to redis");
         }
         _suggestion = new DaDataService(_cache);
-        _geoYandex = new YandexGeocodeService(_cache);
+        _geoYandex = new YandexMapsService(_cache);
         _geoGoogle = new GoogleMapsService(_cache);
     }
 
@@ -91,7 +90,7 @@ public class Server {
             @QueryParam("lat_end") float latEnd,
             @QueryParam("lng_end") float lngEnd
     ){
-        return gson.toJson(_geoGoogle.getRoute(latStart, lngStart, latEnd, lngEnd));
+        return gson.toJson(_geoYandex.getRoute(latStart, lngStart, latEnd, lngEnd));
     }
 
 }

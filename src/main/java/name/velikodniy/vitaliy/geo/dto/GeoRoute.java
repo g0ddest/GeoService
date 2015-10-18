@@ -1,14 +1,20 @@
 package name.velikodniy.vitaliy.geo.dto;
 
+import java.util.List;
+
 public class GeoRoute {
 
     GeoObject origin;
     GeoObject destination;
 
-    Integer distance;
-    Integer duration;
+    Float distance;
+    Float duration;
 
-    public GeoRoute(GeoObject origin, GeoObject destination, Integer distance, Integer duration) {
+    List<Point> route;
+
+    public GeoRoute(){};
+
+    public GeoRoute(GeoObject origin, GeoObject destination, Float distance, Float duration) {
         this.origin = origin;
         this.destination = destination;
         this.distance = distance;
@@ -31,19 +37,27 @@ public class GeoRoute {
         this.destination = destination;
     }
 
-    public Integer getDistance() {
+    public Float getDistance() {
         return distance;
     }
 
-    public void setDistance(Integer distance) {
+    public void setDistance(Float distance) {
         this.distance = distance;
     }
 
-    public Integer getDuration() {
+    public Float getDuration() {
         return duration;
     }
 
-    public void setDuration(Integer duration) {
+    public void setDuration(Float duration) {
         this.duration = duration;
+    }
+
+    public List<Point> getRoute() {
+        return route;
+    }
+
+    public void setRoute(List<Point> route) {
+        this.route = route;
     }
 }

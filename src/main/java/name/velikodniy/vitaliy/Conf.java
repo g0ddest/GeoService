@@ -12,6 +12,8 @@ public class Conf {
     public static String SUGGESTIONS_CACHE_PREFIX = "SG@";
     public static int SUGGESTIONS_CACHE_SEC = 86400; // 1 day
     public static String YANDEX_GEOCODE_BASE_URL = "https://geocode-maps.yandex.ru/";
+    public static String YANDEX_MAPS_API_BASE_URL = "https://api-maps.yandex.ru/";
+    public static String YANDEX_TOKEN = "";
     public static String YANDEX_GEOCODE_CACHE_PREFIX = "GCY@";
     public static String GOOGLE_GEOCODE_CACHE_PREFIX = "GCG@";
     public static int GEOCODE_CACHE_SEC = 86400; // 1 day
@@ -19,6 +21,7 @@ public class Conf {
     public static String GOOGLE_DIRECTIONS_BASE_URL = "https://maps.googleapis.com/";
     public static int ROUTE_CACHE_SEC = 30; // 30 sec
     public static String GOOGLE_LANG = "ru";
+    public static String YANDEX_LANG = "ru_RU";
     public static HashMap<String, String> YANDEX_DADATA_KINDS = new HashMap<String, String>(){{
         put("street", "street");
         put("locality", "city");
