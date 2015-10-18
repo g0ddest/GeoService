@@ -125,7 +125,7 @@ public class DaDataService implements SuggestionProvider, GeoProvider {
 
         SuggestionRequestBody body = new SuggestionRequestBody(name, 1);
 
-        String cacheKey = String.format("%s%d%s,%f,%f,%s,%s", Conf.SUGGESTIONS_CACHE_PREFIX, body.getCount(), body.getQuery());
+        String cacheKey = String.format("%s%d%s", Conf.SUGGESTIONS_CACHE_PREFIX, body.getCount(), body.getQuery());
 
         RealmDaDataSuggestion suggestion;
 
@@ -141,10 +141,9 @@ public class DaDataService implements SuggestionProvider, GeoProvider {
             suggestion = response;
         }
 
-        return new ArrayList<GeoObject>() {{
-            add(suggestion.getGeoObject());
-        }};
-
+        List<GeoObject> objects = new ArrayList<GeoObject>();
+        objects.add(suggestion.getGeoObject());
+        return objects;
     }
 
     @Override

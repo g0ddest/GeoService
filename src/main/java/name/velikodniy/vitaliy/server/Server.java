@@ -4,11 +4,14 @@ import com.google.gson.GsonBuilder;
 import name.velikodniy.vitaliy.geo.api.SuggestionRequestBody;
 import name.velikodniy.vitaliy.geo.cache.CachingProvider;
 import name.velikodniy.vitaliy.geo.cache.Redis;
+import name.velikodniy.vitaliy.geo.dto.GeoObject;
 import name.velikodniy.vitaliy.geo.provider.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Path("/")
 public class Server {
@@ -16,6 +19,7 @@ public class Server {
     private Gson gson = new GsonBuilder().serializeNulls().create();
     private SuggestionProvider _suggestion;
     private GeoProvider _geoYandex;
+    private GeoProvider _geoDadata;
     private GeoProvider _geoGoogle;
 
     public Server() {
@@ -26,6 +30,7 @@ public class Server {
             System.out.println("Cant connect to redis");
         }
         _suggestion = new DaDataService(_cache);
+        _geoDadata = new DaDataService(_cache);
         _geoYandex = new YandexMapsService(_cache);
         _geoGoogle = new GoogleMapsService(_cache);
     }
@@ -77,7 +82,11 @@ public class Server {
     public String reverseGeo(
             @QueryParam("name") String name
     ){
-        return gson.toJson(_geoYandex.getObjects(name));
+        List<GeoObject> objects;
+
+        objects = _geoDadata.getObjects(name);
+        if(objects == null || objects.size() == 0) _geoYandex.getObjects(name);
+        return gson.toJson(objects);
     }
 
     @GET
