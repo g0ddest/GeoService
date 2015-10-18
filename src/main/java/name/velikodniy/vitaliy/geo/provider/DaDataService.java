@@ -8,16 +8,22 @@ import name.velikodniy.vitaliy.Conf;
 import name.velikodniy.vitaliy.geo.api.DaDataApi;
 import name.velikodniy.vitaliy.geo.api.SuggestionRequestBody;
 import name.velikodniy.vitaliy.geo.cache.CachingProvider;
+import name.velikodniy.vitaliy.geo.dto.GeoObject;
+import name.velikodniy.vitaliy.geo.dto.GeoRoute;
+import name.velikodniy.vitaliy.geo.dto.GeoSuggestion;
+import name.velikodniy.vitaliy.geo.realm.dadata.RealmDaDataAnswer;
 import name.velikodniy.vitaliy.geo.realm.dadata.RealmDaDataSuggestion;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-public class DaDataService implements SuggestionProvider {
+public class DaDataService implements SuggestionProvider, GeoProvider {
 
     private DaDataApi apiService;
     private CachingProvider _cache;
@@ -58,10 +64,13 @@ public class DaDataService implements SuggestionProvider {
 
 
     @Override
-    public RealmDaDataSuggestion getSuggestions(SuggestionRequestBody body, GeoProvider geoProvider, float lat, float lng, String locationsType, String locationsValue) throws IOException {
+    public List<GeoSuggestion> getSuggestions(SuggestionRequestBody body, GeoProvider geoProvider, float lat, float lng, String locationsType, String locationsValue) throws IOException {
         String cacheKey = String.format("%s%d%s,%f,%f,%s,%s", Conf.SUGGESTIONS_CACHE_PREFIX, body.getCount(), body.getQuery(), lat, lng, locationsType, locationsValue);
+
+        RealmDaDataSuggestion suggestion;
+
         if(_cache != null && _cache.exists(cacheKey)){
-            return _gson_builder.fromJson(_cache.get(cacheKey), RealmDaDataSuggestion.class);
+            suggestion = _gson_builder.fromJson(_cache.get(cacheKey), RealmDaDataSuggestion.class);
         }else {
 
             if(locationsValue != null && !locationsValue.isEmpty())
@@ -85,7 +94,71 @@ public class DaDataService implements SuggestionProvider {
                 _cache.cache(cacheKey,
                         _gson_encoder.toJson(response),
                         Conf.SUGGESTIONS_CACHE_SEC);
-            return response;
+            suggestion = response;
         }
+
+        ArrayList<GeoSuggestion> r = new ArrayList<>();
+
+        for(RealmDaDataAnswer answer : suggestion.getSuggestions()) {
+
+            GeoSuggestion s = new GeoSuggestion();
+            s.setCity(answer.getRealmData().getCity());
+            s.setDistrict(answer.getRealmData().getCity_district());
+            s.setAddress_full(answer.getValue());
+            s.setCountry(answer.getRealmData().getCountry());
+            s.setRegion(answer.getRealmData().getCountry());
+            s.setHouse(answer.getRealmData().getHouse());
+            s.setStreet(answer.getRealmData().getStreet_with_type());
+            s.setLat(answer.getRealmData().getGeo_lat());
+            s.setLng(answer.getRealmData().getGeo_lon());
+
+            r.add(s);
+
+        }
+
+        return r;
+
+    }
+
+    @Override
+    public List<GeoObject> getObjects(String name) {
+
+        SuggestionRequestBody body = new SuggestionRequestBody(name, 1);
+
+        String cacheKey = String.format("%s%d%s,%f,%f,%s,%s", Conf.SUGGESTIONS_CACHE_PREFIX, body.getCount(), body.getQuery());
+
+        RealmDaDataSuggestion suggestion;
+
+        if(_cache != null && _cache.exists(cacheKey)){
+            suggestion = _gson_builder.fromJson(_cache.get(cacheKey), RealmDaDataSuggestion.class);
+        }else {
+
+            RealmDaDataSuggestion response = apiService.getSuggestion(body);
+            if(_cache != null)
+                _cache.cache(cacheKey,
+                        _gson_encoder.toJson(response),
+                        Conf.SUGGESTIONS_CACHE_SEC);
+            suggestion = response;
+        }
+
+        return new ArrayList<GeoObject>() {{
+            add(suggestion.getGeoObject());
+        }};
+
+    }
+
+    @Override
+    public List<GeoObject> getObjects(float lat, float lng) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public List<GeoRoute> getRoute(float latOrigin, float lngOrigin, float latDest, float lngDest) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public String getLocationMeta(float lat, float lng, String locationType) {
+        throw new NotImplementedException();
     }
 }

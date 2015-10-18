@@ -1,5 +1,7 @@
 package name.velikodniy.vitaliy.geo.realm.dadata;
 
+import java.util.Objects;
+
 public class RealmData{
 
     private String uuid;
@@ -47,8 +49,8 @@ public class RealmData{
     private String capital_marker;
     private String okato;
     private String oktmo;
-    private String geo_lat;
-    private String geo_lon;
+    private float geo_lat;
+    private float geo_lon;
     private String unparsed_parts;
     private String qc;
 
@@ -396,19 +398,19 @@ public class RealmData{
         this.oktmo = oktmo;
     }
 
-    public String getGeo_lat() {
+    public float getGeo_lat() {
         return geo_lat;
     }
 
-    public void setGeo_lat(String geo_lat) {
+    public void setGeo_lat(float geo_lat) {
         this.geo_lat = geo_lat;
     }
 
-    public String getGeo_lon() {
+    public float getGeo_lon() {
         return geo_lon;
     }
 
-    public void setGeo_lon(String geo_lon) {
+    public void setGeo_lon(float geo_lon) {
         this.geo_lon = geo_lon;
     }
 
@@ -434,5 +436,31 @@ public class RealmData{
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public String getAddressShort(){
+
+        String ret = "";
+
+        if(settlement_type_full != null)
+            ret += settlement_type_full;
+
+        if(street_with_type != null) {
+            if (!Objects.equals(ret, "")) ret += ", ";
+            ret += street_with_type;
+        }
+
+        if(street_with_type != null) {
+            if (!Objects.equals(ret, "")) ret += ", ";
+            ret += street_with_type;
+        }
+
+        if(house != null && house_type != null){
+            if (!Objects.equals(ret, "")) ret += ", ";
+            ret += house_type + ", " + house;
+        }
+
+        return ret;
+
     }
 }

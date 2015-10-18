@@ -1,5 +1,6 @@
 package name.velikodniy.vitaliy.server;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import name.velikodniy.vitaliy.geo.api.SuggestionRequestBody;
 import name.velikodniy.vitaliy.geo.cache.CachingProvider;
 import name.velikodniy.vitaliy.geo.cache.Redis;
@@ -13,7 +14,7 @@ import java.io.IOException;
 @Path("/")
 public class Server {
 
-    private Gson gson = new Gson();
+    private Gson gson = new GsonBuilder().serializeNulls().create();
     private SuggestionProvider _suggestion;
     private GeoProvider _geoYandex;
     private GeoProvider _geoGoogle;
@@ -37,7 +38,7 @@ public class Server {
 
     @GET
     @Path("/suggest")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @Consumes(MediaType.APPLICATION_JSON)
     public String suggestions(
             @QueryParam("q") String q,
@@ -61,18 +62,18 @@ public class Server {
 
     @GET
     @Path("/geocode_reverse")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @Consumes(MediaType.APPLICATION_JSON)
     public String reverseGeo(
             @QueryParam("lat") float lat,
             @QueryParam("lng") float lng
     ){
-        return gson.toJson(_geoYandex.getObjects(lat, lng));
+        return gson.toJson(_geoGoogle.getObjects(lat, lng));
     }
 
     @GET
     @Path("/geocode")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @Consumes(MediaType.APPLICATION_JSON)
     public String reverseGeo(
             @QueryParam("name") String name
@@ -82,7 +83,7 @@ public class Server {
 
     @GET
     @Path("/route")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @Consumes(MediaType.APPLICATION_JSON)
     public String route(
             @QueryParam("lat_start") float latStart,

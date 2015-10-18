@@ -1,5 +1,7 @@
 package name.velikodniy.vitaliy.geo.realm.google.directions;
 
+import name.velikodniy.vitaliy.geo.realm.google.RealmGoogleBounds;
+
 import java.util.List;
 
 public class RealmGoogleRoute {

@@ -56,7 +56,7 @@ public class YandexGeocodeService implements GeoProvider {
     @Override
     public List<GeoObject> getObjects(String name) {
 
-        String cacheKey = String.format("%s%s", Conf.GEOCODE_CACHE_PREFIX, name);
+        String cacheKey = String.format("%s%s", Conf.YANDEX_GEOCODE_CACHE_PREFIX, name);
 
         if(_cache != null && _cache.exists(cacheKey)) {
             return _gson.fromJson(_cache.get(cacheKey), ArrayList.class);
@@ -78,7 +78,7 @@ public class YandexGeocodeService implements GeoProvider {
     @Override
     public List<GeoObject> getObjects(float lat, float lng) {
 
-        String cacheKey = String.format(Locale.ENGLISH, "%s%f,%f", Conf.GEOCODE_CACHE_PREFIX, lng, lat);
+        String cacheKey = String.format(Locale.ENGLISH, "%s%f,%f", Conf.YANDEX_GEOCODE_CACHE_PREFIX, lng, lat);
 
         if(_cache != null && _cache.exists(cacheKey)) {
             return _gson.fromJson(_cache.get(cacheKey), ArrayList.class);

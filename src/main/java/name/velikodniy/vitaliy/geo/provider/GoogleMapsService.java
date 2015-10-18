@@ -11,6 +11,7 @@ import name.velikodniy.vitaliy.geo.dto.GeoObject;
 import name.velikodniy.vitaliy.geo.dto.GeoRoute;
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,17 +53,51 @@ public class GoogleMapsService implements GeoProvider {
 
     @Override
     public List<GeoObject> getObjects(String name) {
-        return null;
+        String cacheKey = String.format(Locale.ENGLISH, "%s%s", Conf.GOOGLE_GEOCODE_CACHE_PREFIX, name);
+
+        if(_cache != null && _cache.exists(cacheKey)) {
+            return _gson.fromJson(_cache.get(cacheKey), ArrayList.class);
+        }else{
+            List<GeoObject> response = _geocodeApi.geocode(new HashMap<String, String>() {{
+                put("address", name);
+                put("key", Conf.GOOGLE_API_KEY);
+                put("language", Conf.GOOGLE_LANG);
+            }}).getGeoObjects();
+
+            if(_cache != null)
+                _cache.cache(cacheKey,
+                        _gson.toJson(response),
+                        Conf.ROUTE_CACHE_SEC);
+
+            return response;
+        }
     }
 
     @Override
     public List<GeoObject> getObjects(float lat, float lng) {
-        return null;
+        String cacheKey = String.format(Locale.ENGLISH, "%s%f,%f", Conf.GOOGLE_GEOCODE_CACHE_PREFIX, lat, lng);
+
+        if(_cache != null && _cache.exists(cacheKey)) {
+            return _gson.fromJson(_cache.get(cacheKey), ArrayList.class);
+        }else{
+            List<GeoObject> response = _geocodeApi.geocode(new HashMap<String, String>() {{
+                put("latlng", String.format(Locale.ENGLISH, "%f,%f", lat, lng));
+                put("key", Conf.GOOGLE_API_KEY);
+                put("language", Conf.GOOGLE_LANG);
+            }}).getGeoObjects();
+
+            if(_cache != null)
+                _cache.cache(cacheKey,
+                        _gson.toJson(response),
+                        Conf.ROUTE_CACHE_SEC);
+
+            return response;
+        }
     }
 
     @Override
     public List<GeoRoute> getRoute(float latOrigin, float lngOrigin, float latDest, float lngDest) {
-        String cacheKey = String.format(Locale.ENGLISH, "%s%f,%f,%f,%f", Conf.GEOCODE_CACHE_PREFIX, latOrigin, lngOrigin, latDest, lngDest);
+        String cacheKey = String.format(Locale.ENGLISH, "%s%f,%f,%f,%f", Conf.GOOGLE_GEOCODE_CACHE_PREFIX, latOrigin, lngOrigin, latDest, lngDest);
 
         if(_cache != null && _cache.exists(cacheKey)) {
             return _gson.fromJson(_cache.get(cacheKey), ArrayList.class);
@@ -85,6 +120,6 @@ public class GoogleMapsService implements GeoProvider {
 
     @Override
     public String getLocationMeta(float lat, float lng, String locationType) {
-        return null;
+        throw new NotImplementedException();
     }
 }

@@ -1,4 +1,6 @@
-package name.velikodniy.vitaliy.geo.realm.google.directions;
+package name.velikodniy.vitaliy.geo.realm.google;
+
+import name.velikodniy.vitaliy.geo.realm.google.RealmGoogleCord;
 
 public class RealmGoogleBounds {
     private RealmGoogleCord northeast;

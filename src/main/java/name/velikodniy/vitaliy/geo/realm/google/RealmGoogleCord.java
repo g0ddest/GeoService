@@ -1,4 +1,4 @@
-package name.velikodniy.vitaliy.geo.realm.google.directions;
+package name.velikodniy.vitaliy.geo.realm.google;
 
 public class RealmGoogleCord {
     private float lat;

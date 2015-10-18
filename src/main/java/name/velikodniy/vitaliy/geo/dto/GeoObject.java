@@ -6,6 +6,8 @@ public class GeoObject {
     String description;
     String name;
 
+    public GeoObject(){}
+
     public GeoObject(Point point, String description, String name) {
         this.point = point;
         this.description = description;

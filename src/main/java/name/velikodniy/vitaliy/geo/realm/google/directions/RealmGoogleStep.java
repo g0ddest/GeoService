@@ -1,5 +1,7 @@
 package name.velikodniy.vitaliy.geo.realm.google.directions;
 
+import name.velikodniy.vitaliy.geo.realm.google.RealmGoogleCord;
+
 public class RealmGoogleStep {
     private RealmGoogleDistance distance;
     private RealmGoogleDistance duration;

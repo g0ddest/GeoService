@@ -12,7 +12,8 @@ public class Conf {
     public static String SUGGESTIONS_CACHE_PREFIX = "SG@";
     public static int SUGGESTIONS_CACHE_SEC = 86400; // 1 day
     public static String YANDEX_GEOCODE_BASE_URL = "https://geocode-maps.yandex.ru/";
-    public static String GEOCODE_CACHE_PREFIX = "GC@";
+    public static String YANDEX_GEOCODE_CACHE_PREFIX = "GCY@";
+    public static String GOOGLE_GEOCODE_CACHE_PREFIX = "GCG@";
     public static int GEOCODE_CACHE_SEC = 86400; // 1 day
     public static String GOOGLE_API_KEY = "";
     public static String GOOGLE_DIRECTIONS_BASE_URL = "https://maps.googleapis.com/";
