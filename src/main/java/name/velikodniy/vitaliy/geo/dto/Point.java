@@ -2,27 +2,27 @@ package name.velikodniy.vitaliy.geo.dto;
 
 public class Point {
 
-    float lat;
-    float lng;
+    Float lat;
+    Float lng;
 
     public Point(float lat, float lng) {
         this.lat = lat;
         this.lng = lng;
     }
 
-    public float getLat() {
+    public Float getLat() {
         return lat;
     }
 
-    public void setLat(float lat) {
+    public void setLat(Float lat) {
         this.lat = lat;
     }
 
-    public float getLng() {
+    public Float getLng() {
         return lng;
     }
 
-    public void setLng(float lng) {
+    public void setLng(Float lng) {
         this.lng = lng;
     }
 }

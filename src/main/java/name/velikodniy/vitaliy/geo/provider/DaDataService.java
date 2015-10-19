@@ -27,12 +27,13 @@ public class DaDataService implements SuggestionProvider, GeoProvider {
 
     private DaDataApi apiService;
     private CachingProvider _cache;
-    private Gson _gson_encoder = new Gson();
+    private Gson _gson_encoder = new GsonBuilder().serializeNulls().create();
     private Gson _gson_builder;
 
     public DaDataService(CachingProvider cache) {
         _cache = cache;
         _gson_builder = new GsonBuilder()
+                .serializeNulls()
                 .setExclusionStrategies(new ExclusionStrategy() {
                     @Override
                     public boolean shouldSkipField(FieldAttributes f) {

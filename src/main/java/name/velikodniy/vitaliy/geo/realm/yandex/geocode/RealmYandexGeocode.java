@@ -29,11 +29,44 @@ public class RealmYandexGeocode {
                         .filter(featureMember -> featureMember != null && featureMember.getGeoObject() != null)
                         .forEach(featureMember -> {
                             String[] pos = featureMember.getGeoObject().getPoint().getPos().split(" ");
-                            geoObjectList.add(new GeoObject(
+                            GeoObject object = new GeoObject(
                                     new Point(Float.parseFloat(pos[1]), Float.parseFloat(pos[0])),
                                     featureMember.getGeoObject().getName(),
-                                    featureMember.getGeoObject().getDescription()
-                    ));
+                                    featureMember.getGeoObject().getDescription());
+                            RealmYandexAddressDetails address = featureMember.getGeoObject().getMetaDataProperty().getGeocoderMetaData().getAddressDetails();
+                            if(address.getCountry() != null) {
+                                object.setCountry(address.getCountry().getCountryName());
+                                if(address.getCountry().getAdministrativeArea() != null) {
+                                    object.setRegion(address.getCountry().getAdministrativeArea().getAdministrativeAreaName());
+                                    if((address.getCountry().getAdministrativeArea().getSubAdministrativeArea() != null &&
+                                            address.getCountry().getAdministrativeArea().getSubAdministrativeArea().getLocality() != null
+                                    ) ||
+                                            address.getCountry().getAdministrativeArea().getLocality() != null){
+                                        RealmYandexLocality locality;
+                                        if(address.getCountry().getAdministrativeArea().getLocality() != null)
+                                            locality = address.getCountry().getAdministrativeArea().getLocality();
+                                        else
+                                            locality = address.getCountry().getAdministrativeArea().getSubAdministrativeArea().getLocality();
+
+                                        String cityName = locality.getLocalityName();
+
+                                        if(locality.getDependentLocality() != null) {
+                                            if(locality.getDependentLocality().getPremise() != null)
+                                                object.setHouse(locality.getDependentLocality().getPremise().getPremiseNumber());
+                                        }
+
+                                        object.setCity(cityName);
+                                        if(locality.getThoroughfare() != null){
+                                            object.setStreet(locality.getThoroughfare().getThoroughfareName());
+                                            if(locality.getThoroughfare().getPremise() != null){
+                                                object.setHouse(locality.getThoroughfare().getPremise().getPremiseNumber());
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }
+                            geoObjectList.add(object);
             });
         }
 

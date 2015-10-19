@@ -6,7 +6,6 @@ public class RealmYandexCountry {
     private String CountryName;
     private String CountryNameCode;
 
-
     public String getAddressLine() {
         return AddressLine;
     }
@@ -38,4 +37,5 @@ public class RealmYandexCountry {
     public void setCountryNameCode(String countryNameCode) {
         CountryNameCode = countryNameCode;
     }
+
 }

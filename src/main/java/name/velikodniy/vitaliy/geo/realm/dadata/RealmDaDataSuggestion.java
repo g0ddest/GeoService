@@ -31,12 +31,22 @@ public class RealmDaDataSuggestion {
 
         if(suggestions.size() > 0) {
             RealmDaDataAnswer answer = suggestions.get(0);
-            return new GeoObject(
+
+            GeoObject object = new GeoObject(
                     new Point(answer.getRealmData().getGeo_lat(),
                             answer.getRealmData().getGeo_lon()),
                     answer.getValue(),
                     answer.getValue()
             );
+
+            object.setCountry(answer.getRealmData().getCountry());
+            object.setRegion(answer.getRealmData().getRegion_with_type());
+            object.setDistrict(answer.getRealmData().getCity_district());
+            object.setCity(answer.getRealmData().getCity_with_type());
+            object.setStreet(answer.getRealmData().getStreet_with_type());
+            object.setHouse(answer.getRealmData().getHouse());
+
+            return object;
         }
         return null;
     }

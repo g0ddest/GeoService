@@ -28,6 +28,7 @@ public class GoogleMapsService implements GeoProvider {
 
         _cache = cache;
         _gson = new GsonBuilder()
+                .serializeNulls()
                 .setExclusionStrategies(new ExclusionStrategy() {
                     @Override
                     public boolean shouldSkipField(FieldAttributes f) {
