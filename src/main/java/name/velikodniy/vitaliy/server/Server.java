@@ -85,7 +85,7 @@ public class Server {
         List<GeoObject> objects;
 
         objects = _geoDadata.getObjects(name);
-        if(objects == null || objects.size() == 0) _geoYandex.getObjects(name);
+        if(objects == null || objects.size() == 0 || objects.get(0) == null) objects = _geoYandex.getObjects(name);
         return gson.toJson(objects);
     }
 
