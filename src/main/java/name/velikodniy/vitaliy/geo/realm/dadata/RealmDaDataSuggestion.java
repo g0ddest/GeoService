@@ -45,6 +45,7 @@ public class RealmDaDataSuggestion {
             object.setCity(answer.getRealmData().getCity_with_type());
             object.setStreet(answer.getRealmData().getStreet_with_type());
             object.setHouse(answer.getRealmData().getHouse());
+            object.setPrecision(Integer.parseInt(answer.getRealmData().getQc_geo()));
 
             return object;
         }

@@ -12,10 +12,18 @@ import name.velikodniy.vitaliy.geo.dto.GeoObject;
 import name.velikodniy.vitaliy.geo.dto.GeoRoute;
 import name.velikodniy.vitaliy.geo.realm.yandex.geocode.*;
 import name.velikodniy.vitaliy.geo.realm.yandex.route.RealmYandexRouteResponse;
+import retrofit.Callback;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 import retrofit.converter.GsonConverter;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +67,7 @@ public class YandexMapsService implements GeoProvider {
                 request.addHeader("accept-language", "en-US,en;q=0.8");
                 request.addHeader("upgrade-insecure-requests", "1");
                 request.addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36");
+                request.addHeader("Cookie","yandexuid=1470774661426770341");
             }
         };
 
@@ -73,6 +82,48 @@ public class YandexMapsService implements GeoProvider {
 
         _mapsApi = restMapsAdapter.create(YandexMapsApi.class);
 
+    }
+
+    public static String getTextFromUrl(String url) throws Exception {
+        URL website = new URL(url);
+        URLConnection connection = website.openConnection();
+        connection.setRequestProperty("Cookie", "yandexuid=1470774661426770341");
+        connection.setRequestProperty("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36");
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(
+                        connection.getInputStream()));
+
+        StringBuilder response = new StringBuilder();
+        String inputLine;
+
+        while ((inputLine = in.readLine()) != null)
+            response.append(inputLine);
+
+        in.close();
+
+        return response.toString();
+    }
+
+    private String getToken() throws GeoProviderException{
+        String document;
+        try {
+            document = getTextFromUrl(Conf.YANDEX_MAPS_JS);
+
+            int index = document.indexOf(Conf.YANDEX_TOKEN_SEARCH);
+
+            if (index > 0)
+            {
+                return document.substring(Conf.YANDEX_TOKEN_SEARCH.length() + index,Conf.YANDEX_TOKEN_SEARCH.length() + index +(int)Conf.YANDEX_TOKEN_LENGTH);
+            }
+            else
+            {
+                throw new Exception("Invalid yandex token.");
+            }
+
+        } catch(Exception e) {
+            throw new GeoProviderException("Cant get token");
+        }
     }
 
     @Override
@@ -94,6 +145,35 @@ public class YandexMapsService implements GeoProvider {
                         Conf.GEOCODE_CACHE_SEC);
 
             return response;
+        }
+    }
+
+    @Override
+    public void getObjectsAsync(String name, Callback<List<GeoObject>> callback) {
+
+        String cacheKey = String.format("%s%s", Conf.YANDEX_GEOCODE_CACHE_PREFIX, name);
+
+        if(_cache != null && _cache.exists(cacheKey)) {
+            callback.success(_gson.fromJson(_cache.get(cacheKey), ArrayList.class), null);
+        }else {
+
+            _geocodeApi.geocodeAsync(new HashMap<String, String>() {{
+                put("geocode", name);
+                put("format", "json");
+            }}, new Callback<RealmYandexGeocode>() {
+                @Override
+                public void success(RealmYandexGeocode realmYandexGeocode, Response response) {
+                    if(_cache != null)
+                        _cache.cache(cacheKey,
+                                _gson.toJson(response),
+                                Conf.GEOCODE_CACHE_SEC);
+                    callback.success(realmYandexGeocode.getGeoObjects(), response);
+                }
+
+                @Override
+                public void failure(RetrofitError error) {}
+            });
+
         }
     }
 
@@ -120,18 +200,25 @@ public class YandexMapsService implements GeoProvider {
     }
 
     @Override
-    public List<GeoRoute> getRoute(float latOrigin, float lngOrigin, float latDest, float lngDest) {
+    public List<GeoRoute> getRoute(float latOrigin, float lngOrigin, float latDest, float lngDest) throws GeoProviderException {
 
         String cacheKey = String.format(Locale.ENGLISH, "%s%f,%f,%f,%f", Conf.YANDEX_GEOCODE_CACHE_PREFIX, latOrigin, lngOrigin, latDest, lngDest);
 
         if(_cache != null && _cache.exists(cacheKey)) {
             return _gson.fromJson(_cache.get(cacheKey), ArrayList.class);
         }else{
+
+             String token = getToken();
+
+            if(token == null) throw new GeoProviderException("Cannot get token");
+
              RealmYandexRouteResponse r = _mapsApi.getRoute(new HashMap<String, String>() {{
                  put("rll", String.format(Locale.ENGLISH, "%f,%f~%f,%f", lngOrigin, latOrigin, lngDest, latDest));
-                 put("token", Conf.YANDEX_TOKEN);
+                 put("token", token);
                  put("lang", Conf.YANDEX_LANG);
              }});
+
+            if(r == null) throw new GeoProviderException("Outer geoservice troubles");
 
             List<GeoRoute> response = r.getGeoRoutes(lngOrigin, latOrigin, lngDest, latDest);
 

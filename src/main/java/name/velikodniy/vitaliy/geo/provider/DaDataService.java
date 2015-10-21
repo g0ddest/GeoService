@@ -13,8 +13,12 @@ import name.velikodniy.vitaliy.geo.dto.GeoRoute;
 import name.velikodniy.vitaliy.geo.dto.GeoSuggestion;
 import name.velikodniy.vitaliy.geo.realm.dadata.RealmDaDataAnswer;
 import name.velikodniy.vitaliy.geo.realm.dadata.RealmDaDataSuggestion;
+import name.velikodniy.vitaliy.geo.realm.yandex.geocode.RealmYandexGeocode;
+import retrofit.Callback;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 import retrofit.converter.GsonConverter;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -145,6 +149,38 @@ public class DaDataService implements SuggestionProvider, GeoProvider {
         List<GeoObject> objects = new ArrayList<GeoObject>();
         objects.add(suggestion.getGeoObject());
         return objects;
+    }
+
+    @Override
+    public void getObjectsAsync(String name, Callback<List<GeoObject>> callback) {
+        SuggestionRequestBody body = new SuggestionRequestBody(name, 1);
+
+        String cacheKey = String.format("%s%d%s", Conf.SUGGESTIONS_CACHE_PREFIX, body.getCount(), body.getQuery());
+
+        RealmDaDataSuggestion suggestion;
+
+        if(_cache != null && _cache.exists(cacheKey)){
+            suggestion = _gson_builder.fromJson(_cache.get(cacheKey), RealmDaDataSuggestion.class);
+        }else {
+
+            apiService.getSuggestionAsync(body, new Callback<RealmDaDataSuggestion>() {
+                @Override
+                public void success(RealmDaDataSuggestion realmDaDataSuggestion, Response response) {
+                    if(_cache != null)
+                        _cache.cache(cacheKey,
+                                _gson_encoder.toJson(response),
+                                Conf.SUGGESTIONS_CACHE_SEC);
+                    List<GeoObject> objects = new ArrayList<GeoObject>();
+                    objects.add(realmDaDataSuggestion.getGeoObject());
+                    callback.success(objects, response);
+                }
+
+                @Override
+                public void failure(RetrofitError error) {}
+            }
+        );
+
+        }
     }
 
     @Override

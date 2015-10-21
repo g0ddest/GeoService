@@ -11,6 +11,7 @@ public class GeoObject {
     String district;
     String street;
     String house;
+    Integer precision;
 
     public GeoObject(){}
 
@@ -90,5 +91,13 @@ public class GeoObject {
 
     public void setHouse(String house) {
         this.house = house;
+    }
+
+    public Integer getPrecision() {
+        return precision;
+    }
+
+    public void setPrecision(Integer precision) {
+        this.precision = precision;
     }
 }

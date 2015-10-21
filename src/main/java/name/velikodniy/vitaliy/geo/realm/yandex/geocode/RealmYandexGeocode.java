@@ -1,5 +1,6 @@
 package name.velikodniy.vitaliy.geo.realm.yandex.geocode;
 
+import name.velikodniy.vitaliy.Conf;
 import name.velikodniy.vitaliy.geo.dto.GeoObject;
 import name.velikodniy.vitaliy.geo.dto.Point;
 
@@ -34,6 +35,9 @@ public class RealmYandexGeocode {
                                     featureMember.getGeoObject().getName(),
                                     featureMember.getGeoObject().getDescription());
                             RealmYandexAddressDetails address = featureMember.getGeoObject().getMetaDataProperty().getGeocoderMetaData().getAddressDetails();
+
+                            object.setPrecision( Conf.YANDEX_DADATA_PERCISION.get(featureMember.getGeoObject().getMetaDataProperty().getGeocoderMetaData().getPrecision()) );
+
                             if(address.getCountry() != null) {
                                 object.setCountry(address.getCountry().getCountryName());
                                 if(address.getCountry().getAdministrativeArea() != null) {

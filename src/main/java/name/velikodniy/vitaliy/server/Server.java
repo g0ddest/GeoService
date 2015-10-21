@@ -4,8 +4,12 @@ import com.google.gson.GsonBuilder;
 import name.velikodniy.vitaliy.geo.api.SuggestionRequestBody;
 import name.velikodniy.vitaliy.geo.cache.CachingProvider;
 import name.velikodniy.vitaliy.geo.cache.Redis;
+import name.velikodniy.vitaliy.geo.dto.ErrorObject;
 import name.velikodniy.vitaliy.geo.dto.GeoObject;
 import name.velikodniy.vitaliy.geo.provider.*;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -59,8 +63,7 @@ public class Server {
                     _suggestion.getSuggestions(request, _geoYandex, lat, lng, locations, locationsValue)
             );
         }catch(IOException ex){
-            //TODO: return 403
-            return "Error";
+            return gson.toJson(new ErrorObject("Network error"));
         }
     }
 
@@ -82,11 +85,18 @@ public class Server {
     public String reverseGeo(
             @QueryParam("name") String name
     ){
-        List<GeoObject> objects;
+        boolean dadataAnswered = false;
+        boolean yandexAnswered = false;
+        List<GeoObject> dadataObjects = _geoDadata.getObjects(name);
+        List<GeoObject> yandexObjects = null;
 
-        objects = _geoDadata.getObjects(name);
-        if(objects == null || objects.size() == 0 || objects.get(0) == null) objects = _geoYandex.getObjects(name);
-        return gson.toJson(objects);
+        if(Utils.geocoderResponseQuality(dadataObjects) > 2)
+            yandexObjects = _geoYandex.getObjects(name);
+
+        if(yandexObjects == null || Utils.geocoderResponseQuality(dadataObjects) < Utils.geocoderResponseQuality(yandexObjects))
+            return gson.toJson(dadataObjects);
+        else
+            return gson.toJson(yandexObjects);
     }
 
     @GET
@@ -99,7 +109,11 @@ public class Server {
             @QueryParam("lat_end") float latEnd,
             @QueryParam("lng_end") float lngEnd
     ){
-        return gson.toJson(_geoYandex.getRoute(latStart, lngStart, latEnd, lngEnd));
+        try {
+            return gson.toJson(_geoYandex.getRoute(latStart, lngStart, latEnd, lngEnd));
+        }catch(GeoProviderException e){
+            return gson.toJson(new ErrorObject(e.getMessage()));
+        }
     }
 
 }

@@ -9,6 +9,7 @@ import name.velikodniy.vitaliy.geo.api.GoogleMapsApi;
 import name.velikodniy.vitaliy.geo.cache.CachingProvider;
 import name.velikodniy.vitaliy.geo.dto.GeoObject;
 import name.velikodniy.vitaliy.geo.dto.GeoRoute;
+import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -72,6 +73,11 @@ public class GoogleMapsService implements GeoProvider {
 
             return response;
         }
+    }
+
+    @Override
+    public void getObjectsAsync(String name, Callback<List<GeoObject>> callback) {
+
     }
 
     @Override
