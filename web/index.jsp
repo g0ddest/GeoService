@@ -5,7 +5,7 @@
   </head>
   <body>
     <h3>Avaiable methods</h3>
-    <p><b>/api/suggest?q={QUERY}[&c={COUNT}][&lat={LAT}&lng={LON}][&locations={LOC:street|city|area|province}&[locations_value={LOCV}]]</b> get suggestions for text address where QUERY - text request, COUNT (optional) - max returning objects (default 10).
+    <p><b>/api/suggest?q={QUERY}[&c={COUNT}][&lat={LAT}&lng={LON}][&locations={LOC:street|city|area|region}&[locations_value={LOCV}]]</b> get suggestions for text address where QUERY - text request, COUNT (optional) - max returning objects (default 10).
       <i>Note: "geo_lat" "geo_lon" are set if c=1.</i> Optional you can set {LAT} and {LON} of object to set region of search.
       And also you can set filter of search {LOC}, default is <i>city</i>. Also you can provide text name of filter in {LOCV}</p>
     <p><b>/api/geocode?name={QUERY}</b> get list of objects by text address where QUERY - text request</p>

@@ -245,8 +245,15 @@ public class YandexMapsService implements GeoProvider {
                 try {
                     String meta = r.getGeoObject().getMetaDataProperty().getGeocoderMetaData().getKind();
                     if(Conf.YANDEX_DADATA_KINDS.containsKey(meta) &&
-                       Conf.YANDEX_DADATA_KINDS.get(meta).equals(locationType))
+                       Conf.YANDEX_DADATA_KINDS.get(meta).equals(locationType)) {
+
+                        // if it's area then go some hardcode
+                        if(locationType.equals("area") || locationType.equals("region")){
+                            return r.getGeoObject().getName().split(" ")[0];
+                        }
+
                         return r.getGeoObject().getName();
+                    }
                 }catch (NullPointerException ex){}
             }
         }
