@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class DaDataService implements SuggestionProvider, GeoProvider {
 
@@ -84,14 +85,28 @@ public class DaDataService implements SuggestionProvider, GeoProvider {
                         put(locationsType, locationsValue);
                     }});
                 }});
-            else if(lat != 0.0 && lng != 0.0){
+            else if(lat != 0.0 && lng != 0.0) {
                 String locationsVal = geoProvider.getLocationMeta(lat, lng, locationsType);
-                if(locationsVal != null && !locationsVal.isEmpty())
-                    body.setLocations(new ArrayList<HashMap<String, String>>(){{
-                        add(new HashMap<String, String>(){{
-                            put(locationsType, locationsVal);
-                        }});
+
+                ArrayList<HashMap<String, String>> locations = new ArrayList<HashMap<String, String>>() {{
+                    add(new HashMap<String, String>() {{
+                        put(locationsType, locationsVal);
                     }});
+                }};
+
+                if(Objects.equals(locationsType, "region")){
+                    if(Objects.equals(locationsVal, "Москва"))
+                        locations.add(new HashMap<String, String>() {{
+                            put(locationsType, "Московская");
+                        }});
+                    if(Objects.equals(locationsVal, "Московская"))
+                        locations.add(new HashMap<String, String>() {{
+                            put(locationsType, "Московская");
+                        }});
+                }
+
+                if(locationsVal != null && !locationsVal.isEmpty())
+                    body.setLocations(locations);
             }
 
             RealmDaDataSuggestion response = apiService.getSuggestion(body);
