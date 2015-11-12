@@ -101,7 +101,7 @@ public class DaDataService implements SuggestionProvider, GeoProvider {
                         }});
                     if(Objects.equals(locationsVal, "Московская"))
                         locations.add(new HashMap<String, String>() {{
-                            put(locationsType, "Московская");
+                            put(locationsType, "Москва");
                         }});
                 }
 

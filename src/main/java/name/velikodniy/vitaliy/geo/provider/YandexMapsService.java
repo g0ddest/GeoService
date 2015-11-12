@@ -126,13 +126,22 @@ public class YandexMapsService implements GeoProvider {
         }
     }
 
+    private List<GeoObject> getCachedItems(String cacheKey){
+        ArrayList<GeoObject> geoO = new ArrayList<>();
+        ArrayList unparsedList = _gson.fromJson(_cache.get(cacheKey), ArrayList.class);
+        for(Object unparsedItem : unparsedList){
+            geoO.add(_gson.fromJson(_gson.toJson(unparsedItem), GeoObject.class));
+        }
+        return geoO;
+    }
+
     @Override
     public List<GeoObject> getObjects(String name) {
 
         String cacheKey = String.format("%s%s", Conf.YANDEX_GEOCODE_CACHE_PREFIX, name);
 
         if(_cache != null && _cache.exists(cacheKey)) {
-            return _gson.fromJson(_cache.get(cacheKey), ArrayList.class);
+            return getCachedItems(cacheKey);
         }else{
             List<GeoObject> response = _geocodeApi.geocode(new HashMap<String, String>() {{
                 put("geocode", name);
@@ -154,7 +163,7 @@ public class YandexMapsService implements GeoProvider {
         String cacheKey = String.format("%s%s", Conf.YANDEX_GEOCODE_CACHE_PREFIX, name);
 
         if(_cache != null && _cache.exists(cacheKey)) {
-            callback.success(_gson.fromJson(_cache.get(cacheKey), ArrayList.class), null);
+            callback.success(getCachedItems(cacheKey), null);
         }else {
 
             _geocodeApi.geocodeAsync(new HashMap<String, String>() {{
@@ -183,7 +192,7 @@ public class YandexMapsService implements GeoProvider {
         String cacheKey = String.format(Locale.ENGLISH, "%s%f,%f", Conf.YANDEX_GEOCODE_CACHE_PREFIX, lng, lat);
 
         if(_cache != null && _cache.exists(cacheKey)) {
-            return _gson.fromJson(_cache.get(cacheKey), ArrayList.class);
+            return getCachedItems(cacheKey);
         }else{
             List<GeoObject> response = _geocodeApi.geocode(new HashMap<String, String>() {{
                 put("geocode", String.format(Locale.ENGLISH, "%f,%f", lng, lat));

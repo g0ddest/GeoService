@@ -75,7 +75,9 @@ public class Server {
             @QueryParam("lat") float lat,
             @QueryParam("lng") float lng
     ){
-        return gson.toJson(_geoGoogle.getObjects(lat, lng));
+        List<GeoObject> objects = _geoGoogle.getObjects(lat, lng);
+        if(objects.isEmpty()) objects = _geoYandex.getObjects(lat,lng);
+        return gson.toJson(objects);
     }
 
     @GET
