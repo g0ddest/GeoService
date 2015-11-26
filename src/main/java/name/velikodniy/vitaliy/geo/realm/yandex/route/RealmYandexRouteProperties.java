@@ -114,17 +114,19 @@ class YandexRouteDecoder{
     private List<Point> toCoords(List<Long> c){
 
         List<Point> ret = new ArrayList<>();
-        ret.add(new Point(new BigDecimal(c.get(0)).divide(perc).floatValue(), new BigDecimal(c.get(1)).divide(perc).floatValue()));
+        ret.add(new Point(new BigDecimal(c.get(1)).divide(perc).floatValue(), new BigDecimal(c.get(0)).divide(perc).floatValue()));
 
         int ic = 0;
+
+        System.out.println(c);
 
         for(int i = 2; i < c.size(); i++){
             if(i % 2 == 0) {
 
                 if(i < c.size() - 1)
                     ret.add(new Point(
-                            new BigDecimal(ret.get(ic).getLat()).add(new BigDecimal(c.get(i)).divide(perc)).floatValue(),
-                            new BigDecimal(ret.get(ic).getLat()).add(new BigDecimal(c.get(i + 1)).divide(perc)).floatValue()
+                            new BigDecimal(ret.get(ic).getLat()).add(new BigDecimal(c.get(i + 1)).divide(perc)).floatValue(),
+                            new BigDecimal(ret.get(ic).getLng()).add(new BigDecimal(c.get(i)).divide(perc)).floatValue()
                     ));
                 ic++;
             }
